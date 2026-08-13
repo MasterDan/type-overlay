@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #38bdf8;
+  --color-accent-soft: #7dd3fc;
+  --kb-radius: 7px;
+  --kb-plate-radius: 16px;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* When in overlay mode the body must be fully transparent so only the
+   floating keyboard is visible on top of other apps. */
+body.is-overlay {
+  background: transparent;
+}

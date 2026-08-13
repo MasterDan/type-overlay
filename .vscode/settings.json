@@ -1,0 +1,14 @@
+{
+    "editor.fontLigatures": true,
+    "cSpell.words": [
+        "cdylib",
+        "chrono",
+        "Iden",
+        "rlib",
+        "serde",
+        "Splitview",
+        "sqlx",
+        "staticlib",
+        "tauri"
+    ]
+}
