@@ -60,7 +60,7 @@ xcode-select --install
 
 **Linux (Debian/Ubuntu):**
 ```sh
-sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev \
+sudo apt install libwebkit2gtk-4.1-dev librsvg2-dev \
   patchelf libssl-dev libgtk-3-dev libayatana-appindicator3-dev
 ```
 
