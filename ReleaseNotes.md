@@ -1,5 +1,8 @@
 # Release Notes
 
+## v0.2.2
+- **minor fixes** fixed github actions
+
 ## v0.2.0
 
 ### Added

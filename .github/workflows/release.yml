@@ -73,7 +73,7 @@ jobs:
 
       - run: pnpm tauri build ${{ matrix.args }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.label }}
           path: ${{ matrix.artifacts }}
@@ -157,7 +157,7 @@ jobs:
           chown -R builder:builder "$RT"
           su builder -c "cd '$RT' && makepkg --noconfirm --nodeps"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: artifacts-arch
           path: |
@@ -171,7 +171,7 @@ jobs:
     needs: [build, build-arch]
     if: github.event_name == 'release'
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
 
