@@ -28,6 +28,7 @@ pub fn apply_mode(app: &AppHandle, mode: AppMode) -> tauri::Result<()> {
             win.set_ignore_cursor_events(false)?;
             win.set_resizable(true)?;
             win.set_decorations(true)?;
+            win.set_shadow(true)?;
             win.set_min_size(Some(PhysicalSize::new(WINDOW_MIN_W, WINDOW_MIN_H)))?;
             win.set_size(PhysicalSize::new(WINDOW_W, WINDOW_H))?;
             win.center()?;
@@ -38,6 +39,8 @@ pub fn apply_mode(app: &AppHandle, mode: AppMode) -> tauri::Result<()> {
             win.set_always_on_top(true)?;
             win.set_resizable(false)?;
             win.set_decorations(false)?;
+            // no DWM shadow/rounded frame around the transparent overlay
+            win.set_shadow(false)?;
             win.set_skip_taskbar(true)?;
             // clear min size so the short overlay height is not clamped
             win.set_min_size::<PhysicalSize<u32>>(None)?;

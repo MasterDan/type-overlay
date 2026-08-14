@@ -5,6 +5,7 @@ mod keyboard;
 mod layout;
 mod mode;
 mod models;
+mod pressed;
 mod state;
 
 use crate::state::AppState;

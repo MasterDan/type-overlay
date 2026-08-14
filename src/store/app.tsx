@@ -22,6 +22,7 @@ interface AppStore {
   toMode: (next: AppMode) => void;
   settings: Accessor<Settings>;
   setHotkey: (action: HotkeyAction, combo: string) => void;
+  setOverlayOpacity: (value: number) => void;
   platform: Accessor<Platform>;
 }
 
@@ -30,7 +31,7 @@ const AppContext = createContext<AppStore>();
 const useAppState = (): AppStore => {
   const { layout, cycle } = useLayout();
   const { mode, toMode } = useAppMode();
-  const { settings, setHotkey } = useSettings();
+  const { settings, setHotkey, setOverlayOpacity } = useSettings();
   const [platform, setPlatform] = createSignal<Platform>("unknown");
 
   onMount(() => {
@@ -49,6 +50,7 @@ const useAppState = (): AppStore => {
     toMode,
     settings,
     setHotkey,
+    setOverlayOpacity,
     platform,
   };
 };

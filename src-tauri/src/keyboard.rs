@@ -65,7 +65,8 @@ mod mac {
 
     use tauri::{AppHandle, Emitter};
 
-    use crate::models::{CaptureStatusEvent, KeyEvent};
+    use crate::models::CaptureStatusEvent;
+    use crate::pressed;
 
     type CFAllocatorRef = *const c_void;
     type CFMachPortRef = *mut c_void;
@@ -138,9 +139,9 @@ mod mac {
         let state = &*(user_info as *const TapState);
         let keycode = CGEventGetIntegerValueField(event, K_CG_KEYBOARD_EVENT_KEYCODE) as u64;
 
-        let (name, pressed) = match event_type {
-            K_CG_EVENT_KEY_DOWN => ("key-down", true),
-            K_CG_EVENT_KEY_UP => ("key-up", false),
+        let (code, down) = match event_type {
+            K_CG_EVENT_KEY_DOWN => (keycode_to_code(keycode), true),
+            K_CG_EVENT_KEY_UP => (keycode_to_code(keycode), false),
             K_CG_EVENT_FLAGS_CHANGED => {
                 let mut set = state.mods_down.lock().unwrap();
                 let was_down = set.contains(&keycode);
@@ -149,16 +150,13 @@ mod mac {
                 } else {
                     set.insert(keycode);
                 }
-                (if was_down { "key-up" } else { "key-down" }, !was_down)
+                (keycode_to_code(keycode), !was_down)
             }
             _ => return event,
         };
 
-        let _ = pressed;
-        if let Some(code) = keycode_to_code(keycode) {
-            let _ = state
-                .app
-                .emit(name, KeyEvent { code: code.to_string() });
+        if let Some(code) = code {
+            pressed::set(&state.app, code, down);
         }
         event
     }
@@ -355,9 +353,9 @@ mod mac {
 #[cfg(not(target_os = "macos"))]
 mod rdev_listener {
     use rdev::{listen, EventType, Key};
-    use tauri::{AppHandle, Emitter};
+    use tauri::AppHandle;
 
-    use crate::models::KeyEvent;
+    use crate::pressed;
 
     fn key_to_code(key: Key) -> Option<&'static str> {
         use Key::*;
@@ -454,17 +452,17 @@ mod rdev_listener {
         })
     }
 
-    fn emit_key(app: &AppHandle, name: &str, key: Key) {
+    fn handle_key(app: &AppHandle, key: Key, down: bool) {
         if let Some(code) = key_to_code(key) {
-            let _ = app.emit(name, KeyEvent { code: code.to_string() });
+            pressed::set(app, code, down);
         }
     }
 
     pub fn spawn(app: AppHandle) {
         std::thread::spawn(move || {
             let callback = move |event: rdev::Event| match event.event_type {
-                EventType::KeyPress(k) => emit_key(&app, "key-down", k),
-                EventType::KeyRelease(k) => emit_key(&app, "key-up", k),
+                EventType::KeyPress(k) => handle_key(&app, k, true),
+                EventType::KeyRelease(k) => handle_key(&app, k, false),
                 _ => {}
             };
             if let Err(e) = listen(callback) {

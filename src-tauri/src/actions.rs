@@ -2,9 +2,15 @@ use tauri::{AppHandle, Manager};
 
 use crate::mode;
 use crate::models::{AppMode, HotkeyAction};
+use crate::pressed;
 use crate::state::AppState;
 
 pub fn run_action(app: &AppHandle, action: HotkeyAction) {
+    // A registered global shortcut consumes the physical key events of its
+    // combo (e.g. RegisterHotKey on Windows), so the key listener never sees
+    // the key-ups. Drop every pressed key from the snapshot set.
+    pressed::clear(app);
+
     let st = app.state::<AppState>();
     match action {
         HotkeyAction::ToggleMode => {

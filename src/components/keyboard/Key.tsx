@@ -15,7 +15,6 @@ export const Key: Component<Props> = (props) => {
   const pressed = usePressed();
   const isPressed = () => !!pressed[props.def.code];
   const zoneColor = ZONE_COLORS[zoneOf(props.def.code)];
-  const zoneSoft = `color-mix(in srgb, ${zoneColor} 12%, transparent)`;
 
   return (
     <div
@@ -26,10 +25,9 @@ export const Key: Component<Props> = (props) => {
         height: `${props.def.h}px`,
         "border-color": isPressed() ? undefined : zoneColor,
         color: isPressed() ? undefined : zoneColor,
-        "background-color": isPressed() ? undefined : zoneSoft,
       }}
       classList={{
-        "absolute box-border flex items-center justify-center border rounded-[var(--kb-radius)] transition-colors duration-75":
+        "absolute box-border flex items-center justify-center border-[0.25px] rounded-[var(--kb-radius)] transition-colors duration-75":
           true,
         "border-accent/70 bg-accent/20 text-white shadow-[0_0_14px_-3px] shadow-accent/50":
           isPressed(),
@@ -38,7 +36,7 @@ export const Key: Component<Props> = (props) => {
       <Show
         when={LAYOUTS[props.layout()][props.def.code]}
         fallback={
-          <span class="text-[10px] tracking-wide opacity-70 capitalize">
+          <span class="text-[10px] font-light tracking-wide opacity-70 capitalize">
             {props.def.label}
           </span>
         }
@@ -46,11 +44,11 @@ export const Key: Component<Props> = (props) => {
         {(glyph) => (
           <>
             <Show when={glyph().shift !== glyph().main.toUpperCase()}>
-              <span class="absolute right-[5px] top-[2px] text-[9px]">
+              <span class="absolute right-[5px] top-[2px] text-[9px] font-light">
                 {glyph().shift}
               </span>
             </Show>
-            <span class="text-[13px] font-medium">{glyph().main}</span>
+            <span class="text-[13px] font-light">{glyph().main}</span>
           </>
         )}
       </Show>

@@ -12,23 +12,28 @@ export function useSettings() {
   onMount(async () => {
     store = await load("settings.json", { autoSave: false });
     const saved = await store.get<Settings["hotkeys"]>("hotkeys");
+    const savedOpacity = await store.get<Settings["overlayOpacity"]>(
+      "overlayOpacity",
+    );
     const merged: Settings = {
       hotkeys: { ...DEFAULT_SETTINGS.hotkeys, ...(saved ?? {}) },
+      overlayOpacity: savedOpacity ?? DEFAULT_SETTINGS.overlayOpacity,
     };
     setSettings(merged);
     await commands.registerHotkeys(merged.hotkeys);
   });
 
-  const persist = debounce(async (hotkeys: Settings["hotkeys"]) => {
+  const persist = debounce(async (next: Settings) => {
     if (!store) return;
-    await store.set("hotkeys", hotkeys);
+    await store.set("hotkeys", next.hotkeys);
+    await store.set("overlayOpacity", next.overlayOpacity);
     await store.save();
   }, 300);
 
   createEffect(() => {
-    const hotkeys = settings().hotkeys;
+    const { hotkeys } = settings();
     if (!store) return;
-    persist(hotkeys);
+    persist(settings());
     void commands.registerHotkeys(hotkeys);
   });
 
@@ -39,5 +44,12 @@ export function useSettings() {
     }));
   };
 
-  return { settings, setHotkey };
+  const setOverlayOpacity = (value: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      overlayOpacity: Math.min(100, Math.max(0, value)),
+    }));
+  };
+
+  return { settings, setHotkey, setOverlayOpacity };
 }

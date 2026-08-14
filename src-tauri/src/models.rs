@@ -16,8 +16,9 @@ pub enum HotkeyAction {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct KeyEvent {
-    pub code: String,
+pub struct PressedEvent {
+    pub seq: u64,
+    pub codes: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

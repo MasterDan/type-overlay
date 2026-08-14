@@ -5,6 +5,7 @@ export type CaptureStatus = "active" | "waiting";
 
 export interface Settings {
   hotkeys: Record<HotkeyAction, string>;
+  overlayOpacity: number;
 }
 
 export interface KeyGlyph {
@@ -14,8 +15,9 @@ export interface KeyGlyph {
 
 export type KeyGlyphMap = Partial<Record<string, KeyGlyph>>;
 
-export interface KeyEvent {
-  code: string;
+export interface PressedEvent {
+  seq: number;
+  codes: string[];
 }
 
 export interface CaptureStatusEvent {

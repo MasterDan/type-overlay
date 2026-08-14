@@ -1,6 +1,7 @@
 import type { HotkeyAction, Settings } from "~/types";
 
 export const DEFAULT_SETTINGS: Settings = {
+  overlayOpacity: 20,
   hotkeys: {
     "toggle-mode": "Control+Shift+KeyO",
     "toggle-overlay": "Control+Shift+KeyH",
