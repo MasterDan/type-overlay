@@ -34,10 +34,51 @@ Pre-built binaries are published on the [Releases page](https://github.com/Maste
 | Linux         | `*.deb`, `*.rpm`, `*.AppImage`        |
 | Arch / Manjaro| `*.pkg.tar.zst` (install with `pacman -U`) |
 
-> The macOS build is **not code-signed**. On first launch, bypass Gatekeeper with:
+> The macOS build is signed with an **ad-hoc signature** (no Apple Developer certificate), so Gatekeeper will warn on first launch — see [Installing on macOS](#installing-on-macos) below.
+
+---
+
+## Installing on macOS
+
+The app is not notarized (no Apple Developer license), so macOS blocks it by default and the key-capture permissions need to be granted manually. Follow these steps once after installing, and re-do **step 4** after every new downloaded version.
+
+**1. Install**
+
+Download `*.dmg` from the [Releases page](https://github.com/MasterDan/type-overlay/releases), open it and drag **Type Overlay** into `/Applications`.
+
+**2. Bypass Gatekeeper**
+
+Remove the quarantine flag from the installed app (or right-click it → *Open* → *Open*):
+
+```sh
+xattr -cr "/Applications/Type Overlay.app"
+```
+
+**3. Grant permissions**
+
+Launch the app. It will prompt for two permissions — allow both, then **restart the app** (permissions are only picked up at startup):
+
+- **System Settings → Privacy & Security → Accessibility** → enable *Type Overlay*
+- **System Settings → Privacy & Security → Input Monitoring** → enable *Type Overlay*
+
+If the prompts don't appear, add the app manually with the **+** button (you may need to press `Cmd+Shift+G` and type `/Applications/Type Overlay.app`).
+
+**4. After installing a new version**
+
+Ad-hoc signatures change with every build, so macOS treats each new version as a different app and the old permissions no longer match. If the "no access" banner reappears after an update, reset and re-grant:
+
+```sh
+tccutil reset Accessibility com.typeoverlay.app
+tccutil reset ListenEvent com.typeoverlay.app
+```
+
+Then launch the app and grant the two permissions from **step 3** again.
+
+> **Note:** if the banner still won't go away, verify the bundle is signed and re-sign it manually:
 > ```sh
-> xattr -dr com.apple.quarantine "/path/to/Type Overlay.app"
+> codesign --verify "/Applications/Type Overlay.app" || codesign --force --deep -s - "/Applications/Type Overlay.app"
 > ```
+> Then repeat **step 4**.
 
 ---
 
@@ -130,7 +171,7 @@ On macOS, replace `Ctrl` with `⌘` (Super) in the recorded combo if you prefer.
 
 ## Platform notes
 
-- **macOS** — key capture requires **Accessibility** permission (and on some macOS versions also **Input Monitoring**). Grant them under *System Settings → Privacy & Security*. If you launch the raw debug binary directly, code-signing resets the permission — always run via `pnpm tauri dev` / `pnpm tauri build` and re-grant access after a rebuild. A banner in the app reminds you when access is missing.
+- **macOS** — key capture requires **Accessibility** permission (and on some macOS versions also **Input Monitoring**). Grant them under *System Settings → Privacy & Security*. If you launch the raw debug binary directly, code-signing resets the permission — always run via `pnpm tauri dev` / `pnpm tauri build` and re-grant access after a rebuild. Downloaded (ad-hoc signed) builds also require re-granting after each update — see [Installing on macOS](#installing-on-macos). A banner in the app reminds you when access is missing.
 - **Windows / Linux** — key capture uses `rdev` and needs no special permissions.
 - **Wayland** — always-on-top and click-through are not universally supported by compositors, so the overlay may degrade. Layout auto-detection is also unreliable on Wayland; use the manual layout toggle in the top bar.
 

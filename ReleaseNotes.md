@@ -1,5 +1,15 @@
 # Release Notes
 
+## v0.2.3
+
+### Fixed
+
+- **macOS: key-capture permissions not attaching to the app** — the `.app` bundle is now ad-hoc signed at build time with the proper `com.typeoverlay.app` identity, so macOS TCC can bind **Accessibility** / **Input Monitoring** permissions to it. Previously the bundle was effectively unsigned and the "no access" banner stayed up even with permissions granted.
+
+### Changed
+
+- CI: the release workflow now verifies the macOS bundle signature after building and fails the job if the `.app` is unsigned.
+
 ## v0.2.2
 - **minor fixes** fixed github actions
 

@@ -13,7 +13,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '24'
+  NODE_VERSION: '22'
+  PNPM_VERSION: '11'
 
 defaults:
   run:
@@ -46,7 +47,7 @@ jobs:
               src-tauri/target/release/bundle/rpm/*.rpm
               src-tauri/target/release/bundle/appimage/*.AppImage
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: install linux deps
         if: matrix.label == 'linux'
@@ -54,9 +55,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev patchelf libssl-dev libgtk-3-dev libayatana-appindicator3-dev
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -73,7 +76,15 @@ jobs:
 
       - run: pnpm tauri build ${{ matrix.args }}
 
-      - uses: actions/upload-artifact@v7
+      # The .app must be ad-hoc signed as a bundle (binds Info.plist and
+      # resources under the com.typeoverlay.app identity). Without it macOS TCC
+      # cannot attach Accessibility / Input Monitoring permissions to the app.
+      - name: verify macOS bundle signature
+        if: matrix.label == 'macos'
+        run: |
+          codesign --verify --verbose=2 "src-tauri/target/universal-apple-darwin/release/bundle/macos/Type Overlay.app"
+
+      - uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.label }}
           path: ${{ matrix.artifacts }}
@@ -85,16 +96,18 @@ jobs:
     container:
       image: archlinux:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: install system dependencies
         run: |
           pacman -Syu --noconfirm --needed base-devel git zstd \
             webkit2gtk-4.1 gtk3 openssl librsvg libayatana-appindicator
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -139,7 +152,6 @@ jobs:
           arch=('x86_64')
           url="$REPO_URL"
           license=('MIT')
-          options=('!debug')
           depends=('webkit2gtk-4.1' 'gtk3' 'hicolor-icon-theme')
           optdepends=('libayatana-appindicator: system tray')
 
@@ -157,7 +169,7 @@ jobs:
           chown -R builder:builder "$RT"
           su builder -c "cd '$RT' && makepkg --noconfirm --nodeps"
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: artifacts-arch
           path: |
@@ -171,11 +183,11 @@ jobs:
     needs: [build, build-arch]
     if: github.event_name == 'release'
     steps:
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - uses: softprops/action-gh-release@v3
+      - uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/**/*.exe
