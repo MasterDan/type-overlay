@@ -144,6 +144,7 @@ jobs:
           arch=('x86_64')
           url="$REPO_URL"
           license=('MIT')
+          options=('!debug')
           depends=('webkit2gtk-4.1' 'gtk3' 'hicolor-icon-theme')
           optdepends=('libayatana-appindicator: system tray')
 
