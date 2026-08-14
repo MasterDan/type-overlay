@@ -14,7 +14,6 @@ concurrency:
 
 env:
   NODE_VERSION: '24'
-  PNPM_VERSION: '11.21.0'
 
 defaults:
   run:
@@ -56,8 +55,6 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev patchelf libssl-dev libgtk-3-dev libayatana-appindicator3-dev
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
@@ -96,8 +93,6 @@ jobs:
             webkit2gtk-4.1 gtk3 openssl librsvg libayatana-appindicator
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
