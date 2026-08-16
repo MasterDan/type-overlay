@@ -153,12 +153,15 @@ xcode-select --install
 **Linux (Debian/Ubuntu):**
 ```sh
 sudo apt install libwebkit2gtk-4.1-dev librsvg2-dev \
-  patchelf libssl-dev libgtk-3-dev libayatana-appindicator3-dev
+  patchelf libssl-dev libgtk-3-dev libayatana-appindicator3-dev \
+  libgtk-layer-shell-dev
 ```
+
+> `libgtk-layer-shell-dev` (needed for the Wayland overlay) is unavailable on Ubuntu 22.04 — build it from source the same way the [CI does](.github/workflows/release.yml): `meson setup build gtk-layer-shell -Dprefix=/usr && sudo ninja -C build install`.
 
 **Linux (Arch / Manjaro):**
 ```sh
-sudo pacman -S webkit2gtk-4.1 gtk3 openssl librsvg libayatana-appindicator base-devel
+sudo pacman -S webkit2gtk-4.1 gtk3 openssl librsvg libayatana-appindicator base-devel gtk-layer-shell
 ```
 
 ---
