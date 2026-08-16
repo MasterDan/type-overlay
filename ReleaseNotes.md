@@ -2,6 +2,11 @@
 
 ## v0.2.3
 
+### Added
+
+- **Overlay on every macOS Space** — in overlay mode the window is now pinned to all Spaces, including fullscreen ones (`FullScreenAuxiliary`), raised to the status window level (above the menu bar) and kept when the app is not active; the app switches to the `.accessory` activation policy for the overlay session so macOS stops tying the window to the app's Space. Previously the overlay stayed on its own Space and never appeared over fullscreen apps.
+- **Wayland: layer-shell overlay** — on compositors with wlr-layer-shell support (Hyprland, Sway, …) every monitor now gets a proper overlay layer surface: visible on all workspaces, above fullscreen windows, click-through, reserving no screen space; the main window stays hidden for the whole overlay session. Compositors without layer-shell (e.g. GNOME) fall back to sticky windows.
+
 ### Fixed
 
 - **macOS: key-capture permissions not attaching to the app** — the `.app` bundle is now ad-hoc signed at build time with the proper `com.typeoverlay.app` identity, so macOS TCC can bind **Accessibility** / **Input Monitoring** permissions to it. Previously the bundle was effectively unsigned and the "no access" banner stayed up even with permissions granted.
@@ -9,6 +14,11 @@
 ### Changed
 
 - CI: the release workflow now verifies the macOS bundle signature after building and fails the job if the `.app` is unsigned.
+
+### Misc
+
+- macOS: entering the overlay no longer steals focus — the overlay is click-through and the app is accessory, so the user's active Space is left alone.
+- Linux builds now require the system `gtk-layer-shell` library; secondary overlay windows are pinned to all workspaces (X11 sticky) where layer-shell is unavailable.
 
 ## v0.2.2
 - **minor fixes** fixed github actions

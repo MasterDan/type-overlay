@@ -2,10 +2,14 @@ mod actions;
 mod commands;
 mod hotkeys;
 mod keyboard;
+#[cfg(target_os = "linux")]
+mod layer_shell;
 mod layout;
 mod mode;
 mod models;
 mod pressed;
+#[cfg(target_os = "macos")]
+mod spaces;
 mod state;
 
 use crate::state::AppState;
@@ -20,6 +24,9 @@ pub fn run() {
             let handle = app.handle().clone();
             keyboard::spawn_listener(handle.clone());
             layout::spawn_poller(handle);
+            // setup runs on the main thread, which gtk-layer-shell requires
+            #[cfg(target_os = "linux")]
+            layer_shell::probe_support();
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

@@ -26,7 +26,9 @@
 - `models.rs` — serde types for events/commands (`AppMode`, `HotkeyAction`, `KeyEvent`, `ModeEvent`, `LayoutEvent`).
 - `state.rs` — `AppState` (`mode`, `overlay_visible`).
 - `commands.rs` — `#[tauri::command]`: `set_app_mode`, `set_overlay_visible`, `register_hotkeys`, `get_layout`, `get_platform`, `check_accessibility`.
-- `mode.rs` — window↔overlay transform (`apply_mode`) + `set_overlay_visible`.
+- `mode.rs` — window↔overlay transform (`apply_mode`) + `set_overlay_visible`. In overlay: macOS = the main window is pinned to all Spaces incl. fullscreen (`spaces.rs`); Linux Wayland = one `layer_shell.rs` layer surface per monitor, the main window stays hidden (fallback: X11 sticky windows).
+- `spaces.rs` (macOS) — NSWindow collection behavior (`FullScreenAuxiliary`) + status window level via `objc2`.
+- `layer_shell.rs` (Linux) — wlr-layer-shell overlay surfaces (Hyprland/Sway); `gtk_layer_init_for_window` must run before the window is mapped; needs the system `gtk-layer-shell` library to build.
 - `actions.rs` — `run_action(action)` — what each hotkey does.
 - `hotkeys.rs` — global-shortcut registration via `on_shortcut` (one handler per combo).
 - `keyboard.rs` — global key capture: **macOS** = hand-rolled `CGEventTap` on the main run loop (reads only `keyCode`; rdev's macOS backend traps inside HIToolbox/TSM and crashes, so it's not used here); **Windows/Linux** = `rdev`.
@@ -156,7 +158,9 @@ Ready-made primitives are the priority for typical tasks (debounce/throttle, res
 - `models.rs` — serde-типы событий/команд (`AppMode`, `HotkeyAction`, `KeyEvent`, `ModeEvent`, `LayoutEvent`).
 - `state.rs` — `AppState` (`mode`, `overlay_visible`).
 - `commands.rs` — `#[tauri::command]`: `set_app_mode`, `set_overlay_visible`, `register_hotkeys`, `get_layout`, `get_platform`, `check_accessibility`.
-- `mode.rs` — трансформация окна окно↔оверлей (`apply_mode`) и `set_overlay_visible`.
+- `mode.rs` — трансформация окна окно↔оверлей (`apply_mode`) и `set_overlay_visible`; в overlay на macOS главное окно пинится на все Spaces вкл. fullscreen (`spaces.rs`), на Linux/Wayland — по одному layer-surface на монитор через `layer_shell.rs`, главное окно скрыто (fallback: X11 sticky).
+- `spaces.rs` (macOS) — NSWindow collection behavior (`FullScreenAuxiliary`) + уровень status-окна через `objc2`.
+- `layer_shell.rs` (Linux) — wlr-layer-shell оверлей-поверхности (Hyprland/Sway); `gtk_layer_init_for_window` должен вызываться до маппинга окна; для сборки нужна системная библиотека `gtk-layer-shell`.
 - `actions.rs` — `run_action(action)` — что делает каждый хоткей.
 - `hotkeys.rs` — регистрация глобальных шорткатов через `on_shortcut` (по одному на комбо).
 - `keyboard.rs` — глобальный перехват: **macOS** — самописный `CGEventTap` в main run-loop (читает только `keyCode`, без TSM-вызовов); **Windows/Linux** — `rdev`.

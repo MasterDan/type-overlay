@@ -82,6 +82,57 @@ Then launch the app and grant the two permissions from **step 3** again.
 
 ---
 
+## Installing on Windows
+
+The app needs **no special permissions** on Windows — global key capture works out of the box.
+
+**1. Install**
+
+Download the `*-setup.exe` installer from the [Releases page](https://github.com/MasterDan/type-overlay/releases), run it and follow the steps.
+
+**2. Bypass SmartScreen**
+
+The installer is not code-signed, so Windows may show *"Windows protected your PC"*. Click **More info** → **Run anyway**.
+
+---
+
+## Installing on Linux
+
+Pick the package matching your distribution — all are published on the [Releases page](https://github.com/MasterDan/type-overlay/releases). No special permissions are required; on Wayland see the notes below.
+
+**Debian / Ubuntu (`.deb`)**
+
+```sh
+sudo apt install ./type-overlay_*_amd64.deb
+```
+
+**Fedora / RHEL (`.rpm`)**
+
+```sh
+sudo dnf install ./type-overlay-*.rpm
+```
+
+**Arch / Manjaro (`.pkg.tar.zst`)**
+
+```sh
+sudo pacman -U type-overlay-*.pkg.tar.zst
+```
+
+**Any distro (`.AppImage`)**
+
+```sh
+chmod +x 'Type Overlay'*_amd64.AppImage
+'./Type Overlay'*_amd64.AppImage
+```
+
+> On Ubuntu 22.04+ AppImages need libfuse2: `sudo apt install libfuse2`.
+
+**Wayland users**
+
+On Wayland the overlay uses wlr-layer-shell where the compositor supports it (Hyprland, Sway, …) and falls back to sticky windows elsewhere (e.g. GNOME). Layout auto-detection is unreliable on Wayland — use the manual layout toggle in the top bar. See [Platform notes](#platform-notes).
+
+---
+
 ## Requirements
 
 To build and run from source you need:
