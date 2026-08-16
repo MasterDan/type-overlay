@@ -1,5 +1,18 @@
 # Release Notes
 
+## v0.2.4
+
+### Fixed
+
+- **Broken release CI** — the pnpm version pinned in `packageManager` conflicted with the one in the workflow config (`ERR_PNPM_BAD_PM_VERSION`); the workflow now takes pnpm from `package.json` only.
+- **Linux/macOS build failures** — `gtk-layer-shell` is missing from the Ubuntu 22.04 repos, so CI builds it from source (meson) before the Linux job; the Arch job installs the `gtk-layer-shell` package. The macOS job builds `app,dmg` bundles so the produced `.app` survives for the signature check.
+- **`layer_shell.rs` compile errors on Linux** — missing `MonitorExt` trait import and an invalid double-move of the app handle in `run_on_main_thread`.
+
+### Changed
+
+- CI actions upgraded to Node 24 builds: `checkout@v5`, `setup-node@v6`, `pnpm/action-setup@v6`, `upload-artifact@v6`, `download-artifact@v7`, `action-gh-release@v3`.
+- The `.deb` package now declares `libgtk-layer-shell0` as a dependency; the Arch package declares `gtk-layer-shell` (rpm resolves it automatically via sonames).
+
 ## v0.2.3
 
 ### Added

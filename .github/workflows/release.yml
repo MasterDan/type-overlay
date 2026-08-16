@@ -194,7 +194,7 @@ jobs:
     needs: [build, build-arch]
     if: github.event_name == 'release'
     steps:
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           path: artifacts
 
