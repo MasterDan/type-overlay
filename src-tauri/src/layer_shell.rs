@@ -9,6 +9,7 @@
 
 use std::sync::OnceLock;
 
+use gdk::prelude::MonitorExt as _;
 use gtk_layer_shell::{Edge, Layer, LayerShell};
 use tauri::{AppHandle, Manager, Monitor, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
@@ -34,7 +35,7 @@ pub fn spawn_overlays(app: &AppHandle) {
         return;
     };
     let app = app.clone();
-    let _ = app.run_on_main_thread(move || {
+    let _ = app.clone().run_on_main_thread(move || {
         for (i, mon) in monitors.iter().enumerate() {
             let label = format!("{OVERLAY_LABEL_PREFIX}{i}");
             if let Some(win) = app.get_webview_window(&label) {
